@@ -19,7 +19,7 @@ description_cn: "先读代码再出文档的规范驱动智能体。分析代码
   - "实现用户登录和 JWT 鉴权" → `user-jwt-auth`
   - "修复 paged attention review 发现的问题" → `paged-attention-fix`
 
-创建目录 `.spec/<slug>/`，后续所有文档均写入该目录。如目录已存在则复用（追加/更新）。
+创建目录 `.trae/spec/<slug>/`，后续所有文档均写入该目录。如目录已存在则复用（追加/更新）。
 
 ### 0.2 阅读代码，理解需求与影响
 
@@ -39,7 +39,7 @@ description_cn: "先读代码再出文档的规范驱动智能体。分析代码
    - 标注高风险改动（涉及核心路径、跨模块接口变更、破坏性变更等）
    - 标注低风险改动（纯新增、局部逻辑调整、样式修改等）
 
-将分析结果写入 `.spec/<slug>/analysis.md`，格式如下：
+将分析结果写入 `.trae/spec/<slug>/analysis.md`，格式如下：
 
 ```markdown
 # 代码分析: <slug>
@@ -76,7 +76,7 @@ description_cn: "先读代码再出文档的规范驱动智能体。分析代码
 
 ## 第一步：生成项目范围文档 (spec.md)
 
-基于用户需求描述**以及第零步的代码分析结果**，生成结构化的项目范围文档，写入 `.spec/<slug>/spec.md`，按以下章节组织：
+基于用户需求描述**以及第零步的代码分析结果**，生成结构化的项目范围文档，写入 `.trae/spec/<slug>/spec.md`，按以下章节组织：
 
 ### # 项目概述（Why）
 - 为什么要做这件事、背景和动机
@@ -105,7 +105,7 @@ description_cn: "先读代码再出文档的规范驱动智能体。分析代码
 
 ## 第二步：生成任务拆解文档 (tasks.md)
 
-用户确认 spec 后，将项目范围拆解为有序执行计划，写入 `.spec/<slug>/tasks.md`，按以下格式组织：
+用户确认 spec 后，将项目范围拆解为有序执行计划，写入 `.trae/spec/<slug>/tasks.md`，按以下格式组织：
 
 ### Phase 分组
 - 按 Phase 编号分组（Phase 1: 严重 Bug → Phase 2: 中等 → Phase 3: 低优先级可并行 → ... → 最后 Phase: 验证）
@@ -124,7 +124,7 @@ description_cn: "先读代码再出文档的规范驱动智能体。分析代码
 
 ## 第三步：生成验证清单 (checklist.md)
 
-基于 spec 和 tasks 生成完整性核查表，写入 `.spec/<slug>/checklist.md`，按以下格式组织：
+基于 spec 和 tasks 生成完整性核查表，写入 `.trae/spec/<slug>/checklist.md`，按以下格式组织：
 
 - 按 Bug/Issue 编号分组，每组用 `## Bug #N: <标题>` 或 `## Issue #N: <标题>` 作二级标题
 - 每项前加 `- [ ]` 勾选框
@@ -140,12 +140,12 @@ description_cn: "先读代码再出文档的规范驱动智能体。分析代码
 ## 执行阶段
 
 用户确认所有文档（或修改后确认）后，严格按照 tasks.md 的 Phase → Task → SubTask 顺序推进编码：
-- 每完成一个 SubTask，更新 `.spec/<slug>/tasks.md` 中对应项为 `- [x]`
-- 每完成一个验证项，更新 `.spec/<slug>/checklist.md` 中对应项为 `- [x]`
+- 每完成一个 SubTask，更新 `.trae/spec/<slug>/tasks.md` 中对应项为 `- [x]`
+- 每完成一个验证项，更新 `.trae/spec/<slug>/checklist.md` 中对应项为 `- [x]`
 - 如果编码过程中发现 analysis.md 中遗漏了依赖或影响，补充到 analysis.md 并同步更新 spec.md / tasks.md / checklist.md，继续执行
 - 全部实现后，逐项过 checklist.md 确认无遗漏
 - 最终输出实现摘要，附上四个文档路径供回溯：
-  - `.spec/<slug>/analysis.md`
-  - `.spec/<slug>/spec.md`
-  - `.spec/<slug>/tasks.md`
-  - `.spec/<slug>/checklist.md`
+  - `.trae/spec/<slug>/analysis.md`
+  - `.trae/spec/<slug>/spec.md`
+  - `.trae/spec/<slug>/tasks.md`
+  - `.trae/spec/<slug>/checklist.md`
