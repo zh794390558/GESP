@@ -6,6 +6,7 @@ GESP真题PDF下载脚本
 """
 
 import os
+import argparse
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
@@ -76,20 +77,29 @@ def extract_pdf_links(page_content: str, base_url: str) -> list:
     return pdf_links
 
 
-def download_pdf(url: str, filename: str) -> bool:
-    """下载PDF文件"""
+def download_pdf(url: str, filename: str, force: bool = False) -> bool:
+    """下载PDF文件
+    
+    Args:
+        url: PDF文件下载地址
+        filename: 保存文件名（不含扩展名）
+        force: 是否强制重新下载（全量模式），默认False（增量模式）
+    """
     try:
-        response = requests.get(url, timeout=60, stream=True)
-        response.raise_for_status()
-        
         # 清理文件名中的特殊字符
         filename = ''.join(c for c in filename if c.isalnum() or c in ' ._-')
         filepath = os.path.join(SAVE_DIR, f"{filename}.pdf")
         
-        # 检查文件是否已存在
-        if os.path.exists(filepath):
-            print(f"文件已存在: {filepath}")
+        # 增量模式：检查文件是否已存在，存在则跳过
+        if not force and os.path.exists(filepath):
+            print(f"[增量模式] 文件已存在，跳过: {filepath}")
             return True
+        
+        if force and os.path.exists(filepath):
+            print(f"[全量模式] 文件已存在，重新下载: {filepath}")
+        
+        response = requests.get(url, timeout=60, stream=True)
+        response.raise_for_status()
         
         # 下载文件
         with open(filepath, 'wb') as f:
@@ -106,6 +116,28 @@ def download_pdf(url: str, filename: str) -> bool:
 
 def main():
     """主函数"""
+    parser = argparse.ArgumentParser(
+        description="GESP真题PDF下载脚本",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+使用示例:
+  python gesp_download.py            # 增量下载（默认，跳过已存在文件）
+  python gesp_download.py --full     # 全量重新下载（覆盖已存在文件）
+  python gesp_download.py -f         # 全量重新下载（简写）
+        """
+    )
+    parser.add_argument(
+        '-f', '--full',
+        action='store_true',
+        default=False,
+        help='全量重新下载模式，覆盖已存在的文件（默认：增量下载，跳过已存在文件）'
+    )
+    args = parser.parse_args()
+    
+    mode_name = "全量重新下载" if args.full else "增量下载"
+    print(f"启动模式: {mode_name}")
+    print(f"{'=' * 50}")
+    
     create_save_directory()
     
     total_pdfs = 0
@@ -144,7 +176,7 @@ def main():
                 # 移除可能的时间戳
                 clean_exam_name = ''.join([c for c in clean_exam_name if not (c.isdigit() and len(c) == 8)])
                 full_filename = f"{clean_exam_name} {pdf_name}"
-                download_pdf(pdf_url, full_filename)
+                download_pdf(pdf_url, full_filename, force=args.full)
                 total_pdfs += 1
     
     print(f"\n下载完成！总共处理了 {total_pdfs} 个PDF文件")

@@ -47,6 +47,9 @@ gesp/
 
 ### 1. 准备PDF文件
 将GESP相关的PDF文件放入 `gesp_pdfs/` 目录中。
+```bash
+python3 gesp_download.py
+```
 
 ### 2. 运行处理脚本
 
